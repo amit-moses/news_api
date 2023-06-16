@@ -30,9 +30,6 @@
 </head>
 
 <body>
-
-
-
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -45,10 +42,11 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul id="navbar" class="nav navbar-nav">
-                    
+
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add article</a></li>
+                    <li><a onclick="updateBox(0)" data-toggle="modal" data-target="#exampleModal"><span
+                                class="glyphicon glyphicon-plus"></span> Add article</a></li>
                 </ul>
             </div>
         </div>
@@ -68,15 +66,52 @@
             <button type="button" class="btn btn-danger">Sign Up</button>
         </form>
     </footer>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div id="formcrud" class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="title">Title:</label><br>
+                    <input type="text" id="title" name="title" requiredz value="{{ values.title }}"><br><br>
+
+                    <label for="content">Content:</label><br>
+                    <textarea id="content" name="content" rows="4" cols="50"
+                        required>{{ values.content }}</textarea><br><br>
+
+                    <label for="image-url">Image URL:</label><br>
+                    <input type="url" id="image-url" name="image-url" value="{{ values.image }}" required><br><br>
+
+                    <label for="category">Category:</label><br>
+                    <select id="category" name="category" required>
+
+                    </select><br><br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input id="btnsave" type="submit" class="btn btn-primary" value="save">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         URL = 'https://news-api-4bpn.onrender.com'
         // URL = 'http://127.0.0.1:5000'
         axios.get(`${URL}/api/cat`).then(res => {
             console.log(res.data);
-            const cat = res.data
+            const cat = res.data;
             const resultHTML = cat.map(cat => `<li><a onclick="getArticales('/cat/${cat.id}')">${cat.cat}</a></li>`).join('');
+            const option = res.data;
+            const resultHTML2 = option.map(option => `<option id="check_${option.id}" value="${option.id}">${option.cat}</option>`).join('');
             navbar.innerHTML = resultHTML;
-
+            category.innerHTML = resultHTML2;
         })
         function getArticales(pg) {
             axios.get(`${URL}/api${pg}`).then(res => {
@@ -87,10 +122,10 @@
                     <div class="panel-heading">${article.title}</div>
                     <div class="panel-body"><img src="${article.image}" class="img-responsive"
                             style="width:100%" alt="Image"></div>
-                    <div class="panel-footer">${article.content}</div>
+                    <div class="panel-body">${article.content}</div>
                     <div">
                         <input onclick="remove(${article.id})" type="submit" value="Delete ${article.id}" class="btn btn-danger">
-                        <a href="article/{{ article[0] }}" class="btn btn-primary">Edit</a>
+                        <a onclick="updateBox(${article.id})" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary">Edit</a>
                     </div>
                 </div>
             </div>`).join('');
@@ -98,13 +133,30 @@
 
             })
         }
+        
         function remove(pg) {
             axios.delete(`${URL}/api/${pg}`).then(res => {
                 console.log(res.data);
-                const mes = res.data
-                alert(mes);
-                getArticales('')
-            })
+                const mes = res.data;
+                getArticales(`/cat/${mes.cat}`);
+            });
+        }
+        function updateBox(id) {
+            if (id != 0) {
+                axios.get(`${URL}/api/${id}`).then(res => {
+                    const article = res.data[0];
+                    content.innerHTML = article.content;
+                    document.getElementById('title').value = article.title;
+                    document.getElementById('image-url').value = article.image;
+                    document.getElementById(`check_${article.category}`).selected = "true";
+                });
+            }
+            else {
+                content.innerHTML = '';
+                document.getElementById('title').value = '';
+                document.getElementById('image-url').value = '';
+                document.getElementById(`check_1`).selected = "true";
+            }
         }
         getArticales('')
     </script>
