@@ -57,7 +57,7 @@ def api(id=0, pg=0):
       if len(res)>0:
          db.session.delete(res[0])
          db.session.commit()
-         return jsonify({'message': '1'})
+         return jsonify({'message': '1', 'cat': res[0].category})
    return jsonify({'message': '0'})
 
 @app.route("/api/cat", methods=['POST', 'GET', 'PUT', 'DELETE'])
