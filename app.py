@@ -21,7 +21,7 @@ class Categorey(db.Model):
    id = db.Column(db.Integer, primary_key=True)
    cat = db.Column(db.String(80), unique=True, nullable=False)
 
-@app.route("/api/cat/<pg>", methods=['GET'])
+@app.route("/api/cat/<pg>", methods=['GET']) #amit
 @app.route("/api/", methods=['POST', 'GET'])
 @app.route("/api/<id>", methods=['POST', 'GET', 'PUT', 'DELETE'])
 def api(id=0, pg=0):
