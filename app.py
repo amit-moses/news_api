@@ -21,6 +21,9 @@ class Categorey(db.Model):
    id = db.Column(db.Integer, primary_key=True)
    cat = db.Column(db.String(80), unique=True, nullable=False)
 
+   def toJSON(self):
+      return {"id": self.id, "cat": self.cat}
+
 @app.route("/api/cat/<pg>", methods=['GET']) #amit
 @app.route("/api/", methods=['POST', 'GET'])
 @app.route("/api/<id>", methods=['POST', 'GET', 'PUT', 'DELETE'])
@@ -56,7 +59,13 @@ def api(id=0, pg=0):
          db.session.commit()
          return jsonify({'message': '1'})
    return jsonify({'message': '0'})
+
+@app.route("/api/cat", methods=['POST', 'GET', 'PUT', 'DELETE'])
+def cat():
+   return jsonify([obj.toJSON() for obj in Categorey.query.all()])
+
    
+
 with app.app_context():
    db.create_all()
 
