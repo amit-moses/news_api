@@ -133,7 +133,7 @@
 
             })
         }
-        
+
         function remove(pg) {
             axios.delete(`${URL}/api/${pg}`).then(res => {
                 console.log(res.data);
@@ -149,6 +149,7 @@
                     document.getElementById('title').value = article.title;
                     document.getElementById('image-url').value = article.image;
                     document.getElementById(`check_${article.category}`).selected = "true";
+                    document.getElementById('btnsave').onclick = function () { alert('aaa') };
                 });
             }
             else {
@@ -156,6 +157,23 @@
                 document.getElementById('title').value = '';
                 document.getElementById('image-url').value = '';
                 document.getElementById(`check_1`).selected = "true";
+                document.getElementById('btnsave').onclick = function () {
+                    axios
+                        .post(`${URL}/api`, {
+                            category: "2",
+                            content: "bdikkkk",
+                            image: "https://fastly.picsum.photos/id/937/400/300.jpg?hmac=kgT3HaQRrpPxB_gF_5ZOkoscmOOGZw60W84yOOOQDIE",
+                            title: "bdikkkoooo"
+                        })
+                        .then(function (response) {
+                            console.log(response.data);
+                            // Handle success response
+                            // Reload the browser after successful submission
+                            location.reload();
+                        })
+
+                    alert('bbb')
+                };
             }
         }
         getArticales('')

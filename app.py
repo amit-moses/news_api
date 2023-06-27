@@ -17,7 +17,7 @@ class Article(db.Model):
    content = db.Column(db.String(800))
    image = db.Column(db.String(100))
    category = db.Column(db.String(50), nullable=False)
-
+   
    def toJSON(self):
       return {"id": self.id, "title": self.title , "content": self.content, "image": self.image, "category": self.category}
 
