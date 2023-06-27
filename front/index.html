@@ -79,23 +79,23 @@
                 </div>
                 <div class="modal-body">
                     <label for="title">Title:</label><br>
-                    <input type="text" id="title" name="title" requiredz value="{{ values.title }}"><br><br>
+                    <input class="form-control" type="text" id="title" name="title" requiredz value="{{ values.title }}"><br><br>
 
                     <label for="content">Content:</label><br>
-                    <textarea id="content" name="content" rows="4" cols="50"
+                    <textarea class="form-control" id="content" name="content" rows="4" cols="50"
                         required>{{ values.content }}</textarea><br><br>
 
                     <label for="image-url">Image URL:</label><br>
-                    <input type="url" id="image-url" name="image-url" value="{{ values.image }}" required><br><br>
+                    <input class="form-control" type="url" id="image-url" name="image-url" value="{{ values.image }}" required><br><br>
 
                     <label for="category">Category:</label><br>
-                    <select id="category" name="category" required>
+                    <select class="form-control" id="category" name="category" required>
 
                     </select><br><br>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input id="btnsave" type="submit" class="btn btn-primary" value="save">
+                    <input id="btnsave" type="submit" data-dismiss="modal" class="btn btn-primary" value="save">
                 </div>
             </div>
         </div>
@@ -107,14 +107,22 @@
         axios.get(`${URL}/api/cat`).then(res => {
             console.log(res.data);
             const cat = res.data;
-            const resultHTML = cat.map(cat => `<li><a onclick="getArticales('/cat/${cat.id}')">${cat.cat}</a></li>`).join('');
+            const resultHTML = cat.map(cat => `<li id="cat_${cat.id}"><a onclick="getArticales('${cat.id}')">${cat.cat}</a></li>`).join('');
             const option = res.data;
             const resultHTML2 = option.map(option => `<option id="check_${option.id}" value="${option.id}">${option.cat}</option>`).join('');
             navbar.innerHTML = resultHTML;
             category.innerHTML = resultHTML2;
         })
-        function getArticales(pg) {
-            axios.get(`${URL}/api${pg}`).then(res => {
+        function getArticales(id) {
+            if(id !=-1){
+                for (const child of navbar.children) {
+                child.classList.remove('active')
+            }
+                document.getElementById(`cat_${id}`).classList.add("active");
+            }
+            pg = `${URL}/api/cat/${id}`;
+            if (id === -1){pg = `${URL}/api/`;}
+            axios.get(pg).then(res => {
                 console.log(res.data);
                 const articles = res.data
                 const resultHTML = articles.map(article => `<div class="col-sm-4">
@@ -133,12 +141,11 @@
 
             })
         }
-
         function remove(pg) {
             axios.delete(`${URL}/api/${pg}`).then(res => {
                 console.log(res.data);
                 const mes = res.data;
-                getArticales(`/cat/${mes.cat}`);
+                getArticales(mes.cat);
             });
         }
         function updateBox(id) {
@@ -149,7 +156,23 @@
                     document.getElementById('title').value = article.title;
                     document.getElementById('image-url').value = article.image;
                     document.getElementById(`check_${article.category}`).selected = "true";
-                    document.getElementById('btnsave').onclick = function () { alert('aaa') };
+                    document.getElementById('btnsave').onclick = function () {
+                        dataform = {
+                            category: document.getElementById('category').value,
+                            content: document.getElementById('content').value,
+                            image: document.getElementById('image-url').value,
+                            title: document.getElementById('title').value,
+                        };
+                        axios
+                            .put(`${URL}/api/${id}`, dataform)
+                            .then(function (response) {
+                                console.log(response.data);
+                                location.reload();
+                            })
+
+
+                        console.log(dataform)
+                    };
                 });
             }
             else {
@@ -158,25 +181,25 @@
                 document.getElementById('image-url').value = '';
                 document.getElementById(`check_1`).selected = "true";
                 document.getElementById('btnsave').onclick = function () {
+                    dataform = {
+                        category: document.getElementById('category').value,
+                        content: document.getElementById('content').value,
+                        image: document.getElementById('image-url').value,
+                        title: document.getElementById('title').value,
+                    };
                     axios
-                        .post(`${URL}/api`, {
-                            category: "2",
-                            content: "bdikkkk",
-                            image: "https://fastly.picsum.photos/id/937/400/300.jpg?hmac=kgT3HaQRrpPxB_gF_5ZOkoscmOOGZw60W84yOOOQDIE",
-                            title: "bdikkkoooo"
-                        })
+                        .post(`${URL}/api/`, dataform)
                         .then(function (response) {
                             console.log(response.data);
-                            // Handle success response
-                            // Reload the browser after successful submission
                             location.reload();
                         })
 
-                    alert('bbb')
+
+                    console.log(dataform)
                 };
             }
         }
-        getArticales('')
+        getArticales(-1)
     </script>
 </body>
 
