@@ -102,8 +102,8 @@
     </div>
 
     <script>
-        URL = 'https://news-api-4bpn.onrender.com'
-        // URL = 'http://127.0.0.1:5000'
+        //URL = 'https://news-api-4bpn.onrender.com'
+        URL = 'http://127.0.0.1:5000'
         axios.get(`${URL}/api/cat`).then(res => {
             console.log(res.data);
             const cat = res.data;
@@ -132,7 +132,7 @@
                             style="width:100%" alt="Image"></div>
                     <div class="panel-body">${article.content}</div>
                     <div">
-                        <input onclick="remove(${article.id})" type="submit" value="Delete ${article.id}" class="btn btn-danger">
+                        <input onclick="remove(${article.id})" type="submit" value="Delete" class="btn btn-danger">
                         <a onclick="updateBox(${article.id})" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary">Edit</a>
                     </div>
                 </div>

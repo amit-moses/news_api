@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -17,7 +18,7 @@ class Article(db.Model):
    content = db.Column(db.String(800))
    image = db.Column(db.String(100))
    category = db.Column(db.String(50), nullable=False)
-   
+
    def toJSON(self):
       return {"id": self.id, "title": self.title , "content": self.content, "image": self.image, "category": self.category}
 
@@ -34,13 +35,13 @@ class Categorey(db.Model):
 def api(id=0, pg=0):
    if request.method == 'GET':
       if pg == 0:
-         if id == 0: return jsonify([obj.toJSON() for obj in Article.query.all()])
+         if id == 0: return jsonify([obj.toJSON() for obj in Article.query.order_by(desc(Article.id)).all()])
          else: 
             arc = Article.query.get(id)
             if arc: 
                return jsonify([arc.toJSON()])
             else: return jsonify([])
-      else: return jsonify([obj.toJSON() for obj in Article.query.filter(Article.category.ilike(str(pg))).all()])
+      else: return jsonify([obj.toJSON() for obj in Article.query.filter(Article.category.ilike(str(pg))).order_by(desc(Article.id)).all()])
       
    if (request.method == 'POST' or request.method == 'PUT'):
       data = request.get_json()
